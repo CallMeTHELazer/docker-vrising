@@ -1,0 +1,17 @@
+name: Deploy V Rising Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual deployment from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull and Restart V Rising Server
+        run: |
+          cd /home/steam/Vrising-Dedicated-Server
+          docker compose pull
+          docker compose up -d
