@@ -331,6 +331,17 @@ if ! kill -0 $ServerPID 2>/dev/null; then
     sleep 300
 fi
 
+# Sync BepInEx log output to /tmp/BepInEx_LogOutput.log continuously
+(
+  while kill -0 $ServerPID 2>/dev/null; do
+    if [ -f "$s/BepInEx/LogOutput.log" ]; then
+      cp "$s/BepInEx/LogOutput.log" /tmp/BepInEx_LogOutput.log 2>/dev/null || true
+      chmod 666 /tmp/BepInEx_LogOutput.log 2>/dev/null || true
+    fi
+    sleep 5
+  done
+) &
+
 # Tail log file and waits for Server PID to exit
 /usr/bin/tail -n 0 -f "$p/$logfile" "$p/wine_launch.log" &
 wait $ServerPID
