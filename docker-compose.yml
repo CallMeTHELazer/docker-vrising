@@ -9,6 +9,7 @@ services:
       - GID=1001
       - WINEDLLOVERRIDES=winhttp=n,b
       - ENABLE_BEPINEX=true
+      - ADMIN_STEAM_IDS=76561197996676121
     volumes:
       - '/home/steam/Vrising-Dedicated-Server/start.sh:/start.sh:ro'
       - '/home/steam/Vrising-Dedicated-Server/server:/mnt/vrising/server:rw'
