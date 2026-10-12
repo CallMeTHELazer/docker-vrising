@@ -22,4 +22,7 @@ jobs:
           docker compose down || true
           docker compose pull
           docker compose up -d
+          sleep 15
+          docker compose logs vrising --tail=200 > /tmp/vrising_docker.log 2>&1 || true
+          chmod 644 /tmp/vrising_docker.log 2>/dev/null || true
 
