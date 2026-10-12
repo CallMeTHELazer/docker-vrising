@@ -368,20 +368,25 @@ echo " "
 DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
 ServerPID=$!
 
-echo "Wine process started. Checking VRisingServer.exe status..."
-sleep 5
-if ! pgrep -f "VRisingServer.exe" >/dev/null; then
-    echo "ERROR: VRisingServer.exe is not running after startup!"
+echo "Wine process launched. Waiting for VRisingServer.exe..."
+for i in {1..20}; do
+    if pgrep -f "VRisingServer.exe" >/dev/null; then
+        echo "VRisingServer.exe process detected and running!"
+        break
+    fi
+    sleep 2
+done
+
+if ! pgrep -f "VRisingServer.exe" >/dev/null && ! pgrep -f "wineserver" >/dev/null; then
+    echo "ERROR: VRisingServer.exe failed to start within 40 seconds!"
     echo "=== Content of wine_launch.log ==="
     cat "$p/wine_launch.log" 2>/dev/null || true
     echo "=================================="
-    echo "Sleeping for 5 minutes to prevent rapid crash loops..."
-    sleep 300
 fi
 
 # Sync BepInEx log output and file list to /tmp continuously
 (
-  while pgrep -f "VRisingServer.exe" >/dev/null; do
+  while pgrep -f "VRisingServer.exe" >/dev/null || pgrep -f "wineserver" >/dev/null; do
     find "$s/BepInEx" -maxdepth 3 > /tmp/BepInEx_tree.txt 2>/dev/null || true
     chmod 666 /tmp/BepInEx_tree.txt 2>/dev/null || true
     find "$s/BepInEx" -name "*.log" -o -name "*.txt" -exec cp {} /tmp/BepInEx_LogOutput.log \; 2>/dev/null || true
@@ -390,8 +395,8 @@ fi
   done
 ) &
 
-# Tail log file and wait for VRisingServer.exe to exit
+# Tail log file and wait for VRisingServer.exe or wineserver to exit
 /usr/bin/tail -n 0 -f "$p/$logfile" "$p/wine_launch.log" &
-while pgrep -f "VRisingServer.exe" >/dev/null; do
+while pgrep -f "VRisingServer.exe" >/dev/null || pgrep -f "wineserver" >/dev/null; do
     sleep 5
 done
