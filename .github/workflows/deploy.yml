@@ -10,9 +10,16 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Pull and Restart V Rising Server
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Sync Config and Restart V Rising Server
         run: |
+          mkdir -p /home/steam/Vrising-Dedicated-Server
+          cp docker-compose.yml /home/steam/Vrising-Dedicated-Server/docker-compose.yml
+          cp start.sh /home/steam/Vrising-Dedicated-Server/start.sh
           cd /home/steam/Vrising-Dedicated-Server
-          docker compose down
+          docker compose down || true
           docker compose pull
           docker compose up -d
+

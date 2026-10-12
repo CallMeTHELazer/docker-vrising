@@ -55,6 +55,8 @@ if [ -n "$BRANCH" ]; then
 fi
 cleanup_logs
 
+export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}"
+
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
 echo " "
@@ -63,6 +65,38 @@ echo " "
 /usr/bin/steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$s" +login anonymous +app_update 1829350 $beta_arg validate +quit
 printf "steam_appid: "
 cat "$s/steam_appid.txt"
+
+# BepInEx / Mod support check & auto-installation
+if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
+    echo " "
+    echo "=== BepInEx / Modding Support Enabled ==="
+    export WINEDLLOVERRIDES="winhttp=n,b"
+    mkdir -p "$s/BepInEx/plugins" "$s/BepInEx/config" "$s/BepInEx/patchers" 2>/dev/null
+
+    if [ ! -f "$s/winhttp.dll" ] && [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
+        echo "winhttp.dll not found in $s. Installing BepInEx 6 for V Rising..."
+        BEPINEX_URL="https://thunderstore.io/package/download/BepInEx/BepInExPack/6.0.733/"
+        TMP_ZIP="/tmp/bepinex.zip"
+        if wget -q -O "$TMP_ZIP" "$BEPINEX_URL" 2>/dev/null || curl -sSL -o "$TMP_ZIP" "$BEPINEX_URL"; then
+            echo "Extracting BepInEx Pack..."
+            mkdir -p /tmp/bepinex_out
+            unzip -q -o "$TMP_ZIP" -d /tmp/bepinex_out 2>/dev/null || true
+            if [ -d "/tmp/bepinex_out/BepInExPack" ]; then
+                cp -r /tmp/bepinex_out/BepInExPack/* "$s/"
+            elif [ -d "/tmp/bepinex_out" ]; then
+                cp -r /tmp/bepinex_out/* "$s/"
+            fi
+            rm -rf /tmp/bepinex.zip /tmp/bepinex_out
+            echo "BepInEx 6 installed successfully!"
+        else
+            echo "Failed to download BepInEx automatically. Please place BepInEx files in $s"
+        fi
+    fi
+
+    chmod -R 777 "$s/BepInEx" "$s/winhttp.dll" "$s/doorstop_config.ini" 2>/dev/null || true
+    echo "WINEDLLOVERRIDES set to '$WINEDLLOVERRIDES'"
+    echo "========================================="
+fi
 
 echo " "
 if ! grep -q -o 'avx[^ ]*' /proc/cpuinfo; then
@@ -251,7 +285,7 @@ Xvfb :0 -screen 0 1024x768x16 &
 echo "Launching wine64 V Rising"
 echo " "
 v() {
-	DISPLAY=:0.0 wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath $p -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" 2>&1 &
+	DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath $p -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" 2>&1 &
 }
 v
 # Gets the PID of the last command

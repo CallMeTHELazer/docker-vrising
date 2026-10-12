@@ -28,24 +28,9 @@ RUN apt install -y wine \
                    cabextract \
                    xserver-xorg \
                    xvfb \
-                   jq
-
-# Fetch the latest winetricks to support modern .NET
-RUN wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -O /usr/local/bin/winetricks && \
-    chmod +x /usr/local/bin/winetricks
-
-# --- V RISING 1.0 MODDING SUPPORT ---
-RUN mkdir -p /home/steam/.wine && chown -R steam:steam /home/steam/.wine
-USER steam
-ENV WINEPREFIX=/home/steam/.wine
-ENV WINEARCH=win64
-# Wrap wineboot and winetricks in xvfb-run to fake a display server
-RUN xvfb-run -a wineboot -u && xvfb-run -a winetricks -q dotnet6
-
-USER root
-# Hand ownership back to root so start.sh can execute Wine
-RUN chown -R root:root /home/steam/.wine
-# ------------------------------------
+                   jq \
+                   unzip \
+                   curl
 
 RUN rm -rf /var/lib/apt/lists/* && \
     apt clean && \

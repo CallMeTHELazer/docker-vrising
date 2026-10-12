@@ -7,9 +7,13 @@ services:
       - SERVERNAME=Pokeru
       - UID=1001
       - GID=1001
+      - WINEDLLOVERRIDES=winhttp=n,b
+      - ENABLE_BEPINEX=true
     volumes:
       - '/home/steam/Vrising-Dedicated-Server/server:/mnt/vrising/server:rw'
       - '/home/steam/Vrising-Dedicated-Server/data:/mnt/vrising/persistentdata:rw'
     ports:
       - '9876:9876/udp'
       - '9877:9877/udp'
+    restart: unless-stopped
+
