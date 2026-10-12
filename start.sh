@@ -77,10 +77,20 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
         echo "winhttp.dll not found in $s. Installing BepInEx 6 for V Rising..."
         BEPINEX_URL="https://thunderstore.io/package/download/BepInEx/BepInExPack/6.0.733/"
         TMP_ZIP="/tmp/bepinex.zip"
+        
+        if ! command -v unzip &>/dev/null && ! command -v python3 &>/dev/null; then
+            apt-get update -y && apt-get install -y unzip wget curl 2>/dev/null || true
+        fi
+
         if wget -q -O "$TMP_ZIP" "$BEPINEX_URL" 2>/dev/null || curl -sSL -o "$TMP_ZIP" "$BEPINEX_URL"; then
             echo "Extracting BepInEx Pack..."
             mkdir -p /tmp/bepinex_out
-            unzip -q -o "$TMP_ZIP" -d /tmp/bepinex_out 2>/dev/null || true
+            if command -v unzip &>/dev/null; then
+                unzip -q -o "$TMP_ZIP" -d /tmp/bepinex_out 2>/dev/null || true
+            elif command -v python3 &>/dev/null; then
+                python3 -c "import zipfile; zipfile.ZipFile('$TMP_ZIP').extractall('/tmp/bepinex_out')" 2>/dev/null || true
+            fi
+
             if [ -d "/tmp/bepinex_out/BepInExPack" ]; then
                 cp -r /tmp/bepinex_out/BepInExPack/* "$s/"
             elif [ -d "/tmp/bepinex_out" ]; then
