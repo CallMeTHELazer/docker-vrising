@@ -31,9 +31,10 @@ jobs:
           sleep 40
           docker compose -f docker-compose.yml logs vrising --tail=300 > /tmp/vrising_docker.log 2>&1 || true
           cp /home/steam/Vrising-Dedicated-Server/data/wine_launch.log /tmp/wine_launch.log 2>/dev/null || true
+          cp /home/steam/Vrising-Dedicated-Server/data/Settings/adminlist.txt /tmp/adminlist.txt 2>/dev/null || true
           echo "=== BepInEx Plugins Folder ===" > /tmp/active_mods.txt
           find /home/steam/Vrising-Dedicated-Server/server/BepInEx/plugins -type f >> /tmp/active_mods.txt 2>/dev/null || true
           echo "=== BepInEx LogOutput.log ===" >> /tmp/active_mods.txt
           cat /home/steam/Vrising-Dedicated-Server/server/BepInEx/LogOutput.log >> /tmp/active_mods.txt 2>/dev/null || true
-          chmod 666 /tmp/vrising_docker.log /tmp/wine_launch.log /tmp/active_mods.txt 2>/dev/null || true
+          chmod 666 /tmp/vrising_docker.log /tmp/wine_launch.log /tmp/active_mods.txt /tmp/adminlist.txt 2>/dev/null || true
 
