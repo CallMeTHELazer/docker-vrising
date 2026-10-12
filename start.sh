@@ -313,15 +313,11 @@ ls -la "$s/BepInEx/core" 2>/dev/null || true
 
 echo "[DEBUG] Step 6: Launching wine64 V Rising..."
 echo " "
-v() {
-	DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
-}
-v
-# Gets the PID of the last command
+DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
 ServerPID=$!
 
 echo "Wine process started with PID $ServerPID"
-sleep 3
+sleep 5
 if ! kill -0 $ServerPID 2>/dev/null; then
     echo "ERROR: Wine process (PID $ServerPID) died immediately after startup!"
     echo "=== Content of wine_launch.log ==="
