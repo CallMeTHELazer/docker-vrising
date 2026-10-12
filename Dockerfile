@@ -23,7 +23,6 @@ RUN useradd -m steam && cd /home/steam && \
                    steamcmd && \
     ln -s /usr/games/steamcmd /usr/bin/steamcmd
 
-# Swapped out winetricks for cabextract
 RUN apt install -y wine \
                    winbind \
                    cabextract \
@@ -31,16 +30,17 @@ RUN apt install -y wine \
                    xvfb \
                    jq
 
-# --- V RISING 1.0 MODDING SUPPORT ---
 # Fetch the latest winetricks to support modern .NET
 RUN wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks -O /usr/local/bin/winetricks && \
     chmod +x /usr/local/bin/winetricks
 
+# --- V RISING 1.0 MODDING SUPPORT ---
 RUN mkdir -p /home/steam/.wine && chown -R steam:steam /home/steam/.wine
 USER steam
 ENV WINEPREFIX=/home/steam/.wine
 ENV WINEARCH=win64
-RUN wineboot -u && winetricks -q dotnet6
+# Wrap wineboot and winetricks in xvfb-run to fake a display server
+RUN xvfb-run -a wineboot -u && xvfb-run -a winetricks -q dotnet6
 USER root
 # ------------------------------------
 
