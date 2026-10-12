@@ -71,14 +71,14 @@ cat "$s/steam_appid.txt" 2>/dev/null || echo "1829350"
 echo "[DEBUG] Step 2: steam_appid printed"
 
 # BepInEx / Mod support check & auto-installation
-if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
+if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
     echo "[DEBUG] Step 3: BepInEx check triggered"
     echo " "
     echo "=== BepInEx / Modding Support Enabled ==="
     export WINEDLLOVERRIDES="winhttp=n,b"
     mkdir -p "$s/BepInEx/plugins" "$s/BepInEx/config" "$s/BepInEx/patchers" 2>/dev/null
 
-    if { [ ! -f "$s/winhttp.dll" ] || [ ! -d "$s/dotnet" ]; } && [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
+    if { [ ! -f "$s/winhttp.dll" ] || [ ! -d "$s/dotnet" ]; }; then
         echo "BepInEx core files or dotnet CoreCLR runtime missing in $s. Installing BepInEx 6 for V Rising..."
         BEPINEX_URL="https://ccdn.thunderstore.io/live/repository/packages/BepInEx-BepInExPack_V_Rising-1.733.2.zip"
         TMP_ZIP="/tmp/bepinex.zip"
@@ -121,6 +121,10 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
     chmod -R 777 "$s/BepInEx" "$s/dotnet" "$s/winhttp.dll" "$s/doorstop_config.ini" 2>/dev/null || true
     echo "WINEDLLOVERRIDES set to '$WINEDLLOVERRIDES'"
     echo "========================================="
+else
+    echo "=== BepInEx / Modding Support Disabled (Vanilla Mode) ==="
+    export WINEDLLOVERRIDES=""
+    rm -f "$s/winhttp.dll" 2>/dev/null || true
 fi
 
 echo " "
