@@ -58,6 +58,7 @@ cleanup_logs
 
 export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}"
 export WINEDEBUG="-all"
+export WINE_LARGE_ADDRESS_AWARE=1
 
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
