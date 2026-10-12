@@ -10,14 +10,15 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      # 1. Download the modified repository files to the runner
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # 2. Apply the custom Dockerfile and build the image
       - name: Build and Restart V Rising Server
         run: |
+          # Copy BOTH the Dockerfile and start.sh to your server folder
           cp Dockerfile /home/steam/Vrising-Dedicated-Server/Dockerfile
+          cp start.sh /home/steam/Vrising-Dedicated-Server/start.sh
+          
           cd /home/steam/Vrising-Dedicated-Server
           
           # Tell compose.yaml to build from the Dockerfile instead of pulling from Docker Hub
