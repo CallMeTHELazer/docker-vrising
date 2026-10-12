@@ -302,12 +302,23 @@ ls -la "$s/BepInEx/core" 2>/dev/null || true
 echo "Launching wine64 V Rising"
 echo " "
 v() {
-	DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath $p -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" 2>&1 &
+	DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
 }
 v
 # Gets the PID of the last command
 ServerPID=$!
 
+echo "Wine process started with PID $ServerPID"
+sleep 3
+if ! kill -0 $ServerPID 2>/dev/null; then
+    echo "ERROR: Wine process (PID $ServerPID) died immediately after startup!"
+    echo "=== Content of wine_launch.log ==="
+    cat "$p/wine_launch.log" 2>/dev/null || true
+    echo "=================================="
+    echo "Sleeping for 5 minutes to prevent rapid crash loops..."
+    sleep 300
+fi
+
 # Tail log file and waits for Server PID to exit
-/usr/bin/tail -n 0 -f "$p/$logfile" &
+/usr/bin/tail -n 0 -f "$p/$logfile" "$p/wine_launch.log" &
 wait $ServerPID
