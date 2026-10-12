@@ -110,6 +110,11 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
         fi
     fi
 
+    if [ -f "$s/doorstop_config.ini" ]; then
+        echo "Fixing Linux forward slashes in doorstop_config.ini..."
+        sed -i 's/\\/\//g' "$s/doorstop_config.ini"
+    fi
+
     chmod -R 777 "$s/BepInEx" "$s/dotnet" "$s/winhttp.dll" "$s/doorstop_config.ini" 2>/dev/null || true
     echo "WINEDLLOVERRIDES set to '$WINEDLLOVERRIDES'"
     echo "========================================="
