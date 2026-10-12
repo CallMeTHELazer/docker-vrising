@@ -121,6 +121,36 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
         fi
     fi
 
+    # Auto-install core mod plugins if missing
+    mkdir -p "$s/BepInEx/plugins" 2>/dev/null
+
+    if [ ! -f "$s/BepInEx/plugins/Bloodstone.dll" ]; then
+        echo "Downloading Bloodstone framework..."
+        curl -sSL -o /tmp/bloodstone.zip "https://thunderstore.io/package/download/deca/Bloodstone/0.2.2/" 2>/dev/null || true
+        mkdir -p /tmp/bs_out
+        unzip -q -o /tmp/bloodstone.zip -d /tmp/bs_out 2>/dev/null || true
+        find /tmp/bs_out -name "*.dll" -exec cp {} "$s/BepInEx/plugins/" \; 2>/dev/null || true
+        rm -rf /tmp/bloodstone.zip /tmp/bs_out
+    fi
+
+    if [ ! -f "$s/BepInEx/plugins/VampireCommandFramework.dll" ]; then
+        echo "Downloading VampireCommandFramework..."
+        curl -sSL -o /tmp/vcf.zip "https://thunderstore.io/package/download/deca/VampireCommandFramework/0.11.0/" 2>/dev/null || true
+        mkdir -p /tmp/vcf_out
+        unzip -q -o /tmp/vcf.zip -d /tmp/vcf_out 2>/dev/null || true
+        find /tmp/vcf_out -name "*.dll" -exec cp {} "$s/BepInEx/plugins/" \; 2>/dev/null || true
+        rm -rf /tmp/vcf.zip /tmp/vcf_out
+    fi
+
+    if [ ! -f "$s/BepInEx/plugins/KindredCommands.dll" ]; then
+        echo "Downloading KindredCommands..."
+        curl -sSL -o /tmp/kc.zip "https://thunderstore.io/package/download/odjit/KindredCommands/2.5.8/" 2>/dev/null || true
+        mkdir -p /tmp/kc_out
+        unzip -q -o /tmp/kc.zip -d /tmp/kc_out 2>/dev/null || true
+        find /tmp/kc_out -name "*.dll" -exec cp {} "$s/BepInEx/plugins/" \; 2>/dev/null || true
+        rm -rf /tmp/kc.zip /tmp/kc_out
+    fi
+
     if [ -f "$s/doorstop_config.ini" ]; then
         echo "Fixing Linux forward slashes in doorstop_config.ini..."
         sed -i 's/\\/\//g' "$s/doorstop_config.ini"
