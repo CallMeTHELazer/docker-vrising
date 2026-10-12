@@ -89,11 +89,11 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
         BEPINEX_URL="https://thunderstore.io/package/download/BepInEx/BepInExPack/6.0.733/"
         TMP_ZIP="/tmp/bepinex.zip"
         
-        if ! command -v unzip &>/dev/null && ! command -v python3 &>/dev/null; then
-            apt-get update -y && apt-get install -y unzip wget curl 2>/dev/null || true
-        fi
+        apt-get update -y && apt-get install -y unzip wget curl python3 2>/dev/null || true
 
-        if wget -q -O "$TMP_ZIP" "$BEPINEX_URL" 2>/dev/null || curl -sSL -o "$TMP_ZIP" "$BEPINEX_URL"; then
+        echo "Downloading BepInEx Pack from Thunderstore..."
+        if curl -sSL -o "$TMP_ZIP" "$BEPINEX_URL" || wget --no-check-certificate -q -O "$TMP_ZIP" "$BEPINEX_URL"; then
+            echo "Downloaded BepInEx zip file ($(wc -c < "$TMP_ZIP" 2>/dev/null || echo '?') bytes)."
             echo "Extracting BepInEx Pack..."
             mkdir -p /tmp/bepinex_out
             if command -v unzip &>/dev/null; then
@@ -103,9 +103,11 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
             fi
 
             if [ -d "/tmp/bepinex_out/BepInExPack" ]; then
-                cp -r /tmp/bepinex_out/BepInExPack/* "$s/"
+                echo "Copying BepInExPack contents to $s..."
+                cp -rv /tmp/bepinex_out/BepInExPack/* "$s/"
             elif [ -d "/tmp/bepinex_out" ]; then
-                cp -r /tmp/bepinex_out/* "$s/"
+                echo "Copying extracted contents to $s..."
+                cp -rv /tmp/bepinex_out/* "$s/"
             fi
             rm -rf /tmp/bepinex.zip /tmp/bepinex_out
             echo "BepInEx 6 installed successfully!"
