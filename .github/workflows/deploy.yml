@@ -23,6 +23,7 @@ jobs:
           cd /home/steam/Vrising-Dedicated-Server
           docker compose -f docker-compose.yml down --remove-orphans || true
           docker builder prune -af || true
+          docker image prune -af || true
           docker system prune -f || true
           sudo journalctl --vacuum-time=3d || true
           docker compose -f docker-compose.yml pull
