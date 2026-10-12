@@ -15,6 +15,7 @@ jobs:
 
       - name: Sync Config and Restart V Rising Server
         run: |
+          sudo usermod -aG docker pokeruadmin || true
           mkdir -p /home/steam/Vrising-Dedicated-Server
           rm -f /home/steam/Vrising-Dedicated-Server/compose.yaml
           cp docker-compose.yml /home/steam/Vrising-Dedicated-Server/docker-compose.yml
@@ -23,7 +24,7 @@ jobs:
           docker compose -f docker-compose.yml down || true
           docker compose -f docker-compose.yml pull
           docker compose -f docker-compose.yml up -d
-          sleep 15
-          docker compose -f docker-compose.yml logs vrising --tail=200 > /tmp/vrising_docker.log 2>&1 || true
-          chmod 644 /tmp/vrising_docker.log 2>/dev/null || true
+          sleep 45
+          docker compose -f docker-compose.yml logs vrising --tail=300 > /tmp/vrising_docker.log 2>&1 || true
+          chmod 666 /tmp/vrising_docker.log 2>/dev/null || true
 
