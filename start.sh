@@ -64,11 +64,14 @@ echo " "
 echo "Updating V-Rising Dedicated Server files..."
 echo " "
 /usr/bin/steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$s" +login anonymous +app_update 1829350 $beta_arg validate +quit
+echo "[DEBUG] Step 1: steamcmd finished"
 printf "steam_appid: "
 cat "$s/steam_appid.txt" 2>/dev/null || echo "1829350"
+echo "[DEBUG] Step 2: steam_appid printed"
 
 # BepInEx / Mod support check & auto-installation
 if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
+    echo "[DEBUG] Step 3: BepInEx check triggered"
     echo " "
     echo "=== BepInEx / Modding Support Enabled ==="
     export WINEDLLOVERRIDES="winhttp=n,b"
@@ -283,15 +286,16 @@ if ! [ -f "${p}/$logfile" ]; then
 	touch "$p/$logfile"
 fi
 
+echo "[DEBUG] Step 4: Settings updated. Changing dir to $s..."
 cd "$s" || {
 	echo "Failed to cd to $s"
 	exit 1
 }
 echo "Starting V Rising Dedicated Server with name $SERVERNAME"
 echo "Trying to remove /tmp/.X0-lock"
-rm /tmp/.X0-lock 2>&1
+rm -f /tmp/.X0-lock /tmp/.X1-lock 2>&1
 echo " "
-echo "Starting Xvfb"
+echo "[DEBUG] Step 5: Starting Xvfb..."
 Xvfb :0 -screen 0 1024x768x16 &
 sleep 2
 
@@ -300,7 +304,7 @@ ls -la "$s/winhttp.dll" 2>/dev/null || true
 ls -la "$s/doorstop_config.ini" 2>/dev/null || true
 ls -la "$s/BepInEx/core" 2>/dev/null || true
 
-echo "Launching wine64 V Rising"
+echo "[DEBUG] Step 6: Launching wine64 V Rising..."
 echo " "
 v() {
 	DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
