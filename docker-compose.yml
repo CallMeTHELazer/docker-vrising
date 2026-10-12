@@ -10,6 +10,7 @@ services:
       - WINEDLLOVERRIDES=winhttp=n,b
       - ENABLE_BEPINEX=true
     volumes:
+      - '/home/steam/Vrising-Dedicated-Server/start.sh:/start.sh:ro'
       - '/home/steam/Vrising-Dedicated-Server/server:/mnt/vrising/server:rw'
       - '/home/steam/Vrising-Dedicated-Server/data:/mnt/vrising/persistentdata:rw'
     ports:
