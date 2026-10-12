@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 s=/mnt/vrising/server
 p=/mnt/vrising/persistentdata
 
@@ -27,11 +28,11 @@ trap 'term_handler' SIGTERM
 if [ -z "$LOGDAYS" ]; then
 	LOGDAYS=30
 fi
-if [[ -n $UID ]]; then
-	usermod -u "$UID" docker 2>&1
+if [[ -n $UID ]] && id -u docker &>/dev/null; then
+	usermod -u "$UID" docker 2>&1 || true
 fi
-if [[ -n $GID ]]; then
-	groupmod -g "$GID" docker 2>&1
+if [[ -n $GID ]] && getent group docker &>/dev/null; then
+	groupmod -g "$GID" docker 2>&1 || true
 fi
 if [ -z "$SERVERNAME" ]; then
 	SERVERNAME="trueosiris-V"
@@ -64,7 +65,7 @@ echo "Updating V-Rising Dedicated Server files..."
 echo " "
 /usr/bin/steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$s" +login anonymous +app_update 1829350 $beta_arg validate +quit
 printf "steam_appid: "
-cat "$s/steam_appid.txt"
+cat "$s/steam_appid.txt" 2>/dev/null || echo "1829350"
 
 # BepInEx / Mod support check & auto-installation
 if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
