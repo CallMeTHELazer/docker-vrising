@@ -324,10 +324,10 @@ echo " "
 DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
 ServerPID=$!
 
-echo "Wine process started with PID $ServerPID"
+echo "Wine process started. Checking VRisingServer.exe status..."
 sleep 5
-if ! kill -0 $ServerPID 2>/dev/null; then
-    echo "ERROR: Wine process (PID $ServerPID) died immediately after startup!"
+if ! pgrep -f "VRisingServer.exe" >/dev/null; then
+    echo "ERROR: VRisingServer.exe is not running after startup!"
     echo "=== Content of wine_launch.log ==="
     cat "$p/wine_launch.log" 2>/dev/null || true
     echo "=================================="
@@ -337,7 +337,7 @@ fi
 
 # Sync BepInEx log output and file list to /tmp continuously
 (
-  while kill -0 $ServerPID 2>/dev/null; do
+  while pgrep -f "VRisingServer.exe" >/dev/null; do
     find "$s/BepInEx" -maxdepth 3 > /tmp/BepInEx_tree.txt 2>/dev/null || true
     chmod 666 /tmp/BepInEx_tree.txt 2>/dev/null || true
     find "$s/BepInEx" -name "*.log" -o -name "*.txt" -exec cp {} /tmp/BepInEx_LogOutput.log \; 2>/dev/null || true
@@ -346,6 +346,8 @@ fi
   done
 ) &
 
-# Tail log file and waits for Server PID to exit
+# Tail log file and wait for VRisingServer.exe to exit
 /usr/bin/tail -n 0 -f "$p/$logfile" "$p/wine_launch.log" &
-wait $ServerPID
+while pgrep -f "VRisingServer.exe" >/dev/null; do
+    sleep 5
+done
