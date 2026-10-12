@@ -57,6 +57,7 @@ fi
 cleanup_logs
 
 export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}"
+export WINEDEBUG="-all"
 
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
@@ -68,6 +69,12 @@ echo "[DEBUG] Step 1: steamcmd finished"
 printf "steam_appid: "
 cat "$s/steam_appid.txt" 2>/dev/null || echo "1829350"
 echo "[DEBUG] Step 2: steam_appid printed"
+
+# Clean up broken/incompatible dotnet folder if left behind from earlier attempts
+if [ -d "$s/dotnet" ]; then
+    echo "Removing leftover/incompatible $s/dotnet directory..."
+    rm -rf "$s/dotnet"
+fi
 
 # BepInEx / Mod support check & auto-installation
 if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
