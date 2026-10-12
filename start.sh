@@ -292,6 +292,13 @@ rm /tmp/.X0-lock 2>&1
 echo " "
 echo "Starting Xvfb"
 Xvfb :0 -screen 0 1024x768x16 &
+sleep 2
+
+echo "Checking BepInEx and Doorstop files in $s..."
+ls -la "$s/winhttp.dll" 2>/dev/null || true
+ls -la "$s/doorstop_config.ini" 2>/dev/null || true
+ls -la "$s/BepInEx/core" 2>/dev/null || true
+
 echo "Launching wine64 V Rising"
 echo " "
 v() {
