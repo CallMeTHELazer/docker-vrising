@@ -40,6 +40,8 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt clean && \
     apt autoremove -y
 
+ENV PATH="/opt/wine-staging/bin:$PATH"
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 CMD ["/start.sh"]

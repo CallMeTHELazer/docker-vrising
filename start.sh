@@ -1,5 +1,6 @@
 #!/bin/bash
 set +e
+export PATH="/opt/wine-staging/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 s=/mnt/vrising/server
 p=/mnt/vrising/persistentdata
 
@@ -363,9 +364,11 @@ ls -la "$s/winhttp.dll" 2>/dev/null || true
 ls -la "$s/doorstop_config.ini" 2>/dev/null || true
 ls -la "$s/BepInEx/core" 2>/dev/null || true
 
-echo "[DEBUG] Step 6: Launching wine64 V Rising..."
+echo "[DEBUG] Step 6: Launching Wine V Rising..."
 echo " "
-DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" wine64 /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
+WINE_BIN=$(command -v wine64 || command -v wine || echo "/opt/wine-staging/bin/wine")
+echo "Using Wine binary: $WINE_BIN"
+DISPLAY=:0.0 WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-winhttp=n,b}" "$WINE_BIN" /mnt/vrising/server/VRisingServer.exe -persistentDataPath "$p" -serverName "$SERVERNAME" "$override_savename" -logFile "$p/$logfile" "$game_port" "$query_port" > "$p/wine_launch.log" 2>&1 &
 ServerPID=$!
 
 echo "Wine process launched. Waiting for VRisingServer.exe..."
