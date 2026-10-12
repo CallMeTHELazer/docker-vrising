@@ -10,20 +10,9 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Build and Restart V Rising Server
+      - name: Pull and Restart V Rising Server
         run: |
-          # Copy BOTH the Dockerfile and start.sh to your server folder
-          cp Dockerfile /home/steam/Vrising-Dedicated-Server/Dockerfile
-          cp start.sh /home/steam/Vrising-Dedicated-Server/start.sh
-          
           cd /home/steam/Vrising-Dedicated-Server
-          
-          # Tell compose.yaml to build from the Dockerfile instead of pulling from Docker Hub
-          sed -i 's|image: trueosiris/vrising|build: .|' compose.yaml
-          
-          # Build the custom image with .NET 6 and start the container
-          docker compose build
+          docker compose down
+          docker compose pull
           docker compose up -d
