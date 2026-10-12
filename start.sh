@@ -62,6 +62,13 @@ export WINE_LARGE_ADDRESS_AWARE=1
 
 mkdir -p /root/.steam 2>/dev/null
 chmod -R 777 /root/.steam 2>/dev/null
+
+if ! [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
+    echo "=== Cleaning leftover BepInEx & Doorstop files for Vanilla Mode ==="
+    export WINEDLLOVERRIDES=""
+    rm -rf "$s/winhttp.dll" "$s/doorstop_config.ini" "$s/dotnet" "$s/BepInEx" 2>/dev/null || true
+fi
+
 echo " "
 echo "Updating V-Rising Dedicated Server files..."
 echo " "
