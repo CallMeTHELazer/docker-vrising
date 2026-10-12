@@ -70,12 +70,6 @@ printf "steam_appid: "
 cat "$s/steam_appid.txt" 2>/dev/null || echo "1829350"
 echo "[DEBUG] Step 2: steam_appid printed"
 
-# Clean up broken/incompatible dotnet folder if left behind from earlier attempts
-if [ -d "$s/dotnet" ]; then
-    echo "Removing leftover/incompatible $s/dotnet directory..."
-    rm -rf "$s/dotnet"
-fi
-
 # BepInEx / Mod support check & auto-installation
 if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s/winhttp.dll" ]; then
     echo "[DEBUG] Step 3: BepInEx check triggered"
@@ -84,8 +78,8 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
     export WINEDLLOVERRIDES="winhttp=n,b"
     mkdir -p "$s/BepInEx/plugins" "$s/BepInEx/config" "$s/BepInEx/patchers" 2>/dev/null
 
-    if [ ! -f "$s/winhttp.dll" ] && [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
-        echo "winhttp.dll not found in $s. Installing BepInEx 6 for V Rising..."
+    if { [ ! -f "$s/winhttp.dll" ] || [ ! -d "$s/dotnet" ]; } && [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
+        echo "BepInEx core files or dotnet CoreCLR runtime missing in $s. Installing BepInEx 6 for V Rising..."
         BEPINEX_URL="https://thunderstore.io/package/download/BepInEx/BepInExPack/6.0.733/"
         TMP_ZIP="/tmp/bepinex.zip"
         
@@ -104,10 +98,10 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
 
             if [ -d "/tmp/bepinex_out/BepInExPack" ]; then
                 echo "Copying BepInExPack contents to $s..."
-                cp -rv /tmp/bepinex_out/BepInExPack/* "$s/"
+                cp -r /tmp/bepinex_out/BepInExPack/* "$s/"
             elif [ -d "/tmp/bepinex_out" ]; then
                 echo "Copying extracted contents to $s..."
-                cp -rv /tmp/bepinex_out/* "$s/"
+                cp -r /tmp/bepinex_out/* "$s/"
             fi
             rm -rf /tmp/bepinex.zip /tmp/bepinex_out
             echo "BepInEx 6 installed successfully!"
@@ -116,7 +110,7 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
         fi
     fi
 
-    chmod -R 777 "$s/BepInEx" "$s/winhttp.dll" "$s/doorstop_config.ini" 2>/dev/null || true
+    chmod -R 777 "$s/BepInEx" "$s/dotnet" "$s/winhttp.dll" "$s/doorstop_config.ini" 2>/dev/null || true
     echo "WINEDLLOVERRIDES set to '$WINEDLLOVERRIDES'"
     echo "========================================="
 fi
