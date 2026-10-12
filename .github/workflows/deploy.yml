@@ -15,7 +15,6 @@ jobs:
 
       - name: Sync Config and Restart V Rising Server
         run: |
-          sudo usermod -aG docker pokeruadmin || true
           mkdir -p /home/steam/Vrising-Dedicated-Server
           rm -f /home/steam/Vrising-Dedicated-Server/compose.yaml
           cp docker-compose.yml /home/steam/Vrising-Dedicated-Server/docker-compose.yml
