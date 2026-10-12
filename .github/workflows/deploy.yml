@@ -4,14 +4,25 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual deployment from GitHub UI
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Pull and Restart V Rising Server
+      # 1. Download the modified repository files to the runner
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # 2. Apply the custom Dockerfile and build the image
+      - name: Build and Restart V Rising Server
         run: |
+          cp Dockerfile /home/steam/Vrising-Dedicated-Server/Dockerfile
           cd /home/steam/Vrising-Dedicated-Server
-          docker compose pull
+          
+          # Tell compose.yaml to build from the Dockerfile instead of pulling from Docker Hub
+          sed -i 's|image: trueosiris/vrising|build: .|' compose.yaml
+          
+          # Build the custom image with .NET 6 and start the container
+          docker compose build
           docker compose up -d
