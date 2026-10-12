@@ -41,7 +41,10 @@ ENV WINEPREFIX=/home/steam/.wine
 ENV WINEARCH=win64
 # Wrap wineboot and winetricks in xvfb-run to fake a display server
 RUN xvfb-run -a wineboot -u && xvfb-run -a winetricks -q dotnet6
+
 USER root
+# Hand ownership back to root so start.sh can execute Wine
+RUN chown -R root:root /home/steam/.wine
 # ------------------------------------
 
 RUN rm -rf /var/lib/apt/lists/* && \
