@@ -1,14 +1,15 @@
 services:
   vrising:
     container_name: vrising
-    image: trueosiris/vrising
+    build: .
+    image: vrising-custom:latest
     environment:
       - TZ=America/New_York
       - SERVERNAME=Pokeru
       - UID=1001
       - GID=1001
-      - WINEDLLOVERRIDES=
-      - ENABLE_BEPINEX=false
+      - WINEDLLOVERRIDES=winhttp=n,b
+      - ENABLE_BEPINEX=true
       - ADMIN_STEAM_IDS=76561197996676121
     volumes:
       - '/home/steam/Vrising-Dedicated-Server/start.sh:/start.sh:ro'

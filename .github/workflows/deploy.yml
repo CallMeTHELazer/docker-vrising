@@ -19,6 +19,7 @@ jobs:
           rm -rf /home/steam/Vrising-Dedicated-Server/compose.yaml /home/steam/Vrising-Dedicated-Server/start.sh
           cp docker-compose.yml /home/steam/Vrising-Dedicated-Server/docker-compose.yml
           cp start.sh /home/steam/Vrising-Dedicated-Server/start.sh
+          cp Dockerfile /home/steam/Vrising-Dedicated-Server/Dockerfile
           chmod 755 /home/steam/Vrising-Dedicated-Server/start.sh
           cd /home/steam/Vrising-Dedicated-Server
           docker compose -f docker-compose.yml down --remove-orphans || true
@@ -26,7 +27,7 @@ jobs:
           docker image prune -af || true
           docker system prune -f || true
           sudo journalctl --vacuum-time=3d || true
-          docker compose -f docker-compose.yml pull
+          docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml up -d
           sleep 75
           docker compose -f docker-compose.yml logs vrising --tail=300 > /tmp/vrising_docker.log 2>&1 || true
