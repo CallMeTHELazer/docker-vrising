@@ -331,13 +331,13 @@ if ! kill -0 $ServerPID 2>/dev/null; then
     sleep 300
 fi
 
-# Sync BepInEx log output to /tmp/BepInEx_LogOutput.log continuously
+# Sync BepInEx log output and file list to /tmp continuously
 (
   while kill -0 $ServerPID 2>/dev/null; do
-    if [ -f "$s/BepInEx/LogOutput.log" ]; then
-      cp "$s/BepInEx/LogOutput.log" /tmp/BepInEx_LogOutput.log 2>/dev/null || true
-      chmod 666 /tmp/BepInEx_LogOutput.log 2>/dev/null || true
-    fi
+    find "$s/BepInEx" -maxdepth 3 > /tmp/BepInEx_tree.txt 2>/dev/null || true
+    chmod 666 /tmp/BepInEx_tree.txt 2>/dev/null || true
+    find "$s/BepInEx" -name "*.log" -o -name "*.txt" -exec cp {} /tmp/BepInEx_LogOutput.log \; 2>/dev/null || true
+    chmod 666 /tmp/BepInEx_LogOutput.log 2>/dev/null || true
     sleep 5
   done
 ) &
