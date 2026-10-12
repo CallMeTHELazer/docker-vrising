@@ -27,7 +27,7 @@ jobs:
           docker image prune -af || true
           docker system prune -f || true
           sudo journalctl --vacuum-time=3d || true
-          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml pull
           docker compose -f docker-compose.yml up -d
           sleep 75
           docker compose -f docker-compose.yml logs vrising --tail=300 > /tmp/vrising_docker.log 2>&1 || true

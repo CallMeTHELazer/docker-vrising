@@ -41,11 +41,6 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt autoremove -y
 
 ENV PATH="/opt/wine-staging/bin:$PATH"
-ENV WINEPREFIX="/root/.wine"
-ENV WINEARCH="win64"
-
-# Pre-initialize Wine prefix so container boots instantly
-RUN xvfb-run -a wineboot -u
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
