@@ -1,17 +1,15 @@
 services:
   vrising:
     container_name: vrising
-    build: .
+    image: trueosiris/vrising
     environment:
       - TZ=America/New_York
       - SERVERNAME=Pokeru
       - UID=1001
       - GID=1001
-      - WINEDLLOVERRIDES=winhttp=n,b
     volumes:
       - '/home/steam/Vrising-Dedicated-Server/server:/mnt/vrising/server:rw'
       - '/home/steam/Vrising-Dedicated-Server/data:/mnt/vrising/persistentdata:rw'
     ports:
       - '9876:9876/udp'
       - '9877:9877/udp'
-    restart: unless-stopped
