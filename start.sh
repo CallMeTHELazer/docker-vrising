@@ -80,7 +80,7 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
 
     if { [ ! -f "$s/winhttp.dll" ] || [ ! -d "$s/dotnet" ]; } && [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]]; then
         echo "BepInEx core files or dotnet CoreCLR runtime missing in $s. Installing BepInEx 6 for V Rising..."
-        BEPINEX_URL="https://thunderstore.io/package/download/BepInEx/BepInExPack/6.0.733/"
+        BEPINEX_URL="https://ccdn.thunderstore.io/live/repository/packages/BepInEx-BepInExPack_V_Rising-1.733.2.zip"
         TMP_ZIP="/tmp/bepinex.zip"
         
         apt-get update -y && apt-get install -y unzip wget curl python3 2>/dev/null || true
@@ -96,7 +96,10 @@ if [[ "$ENABLE_BEPINEX" =~ ^(true|TRUE|1)$ ]] || [ -d "$s/BepInEx" ] || [ -f "$s
                 python3 -c "import zipfile; zipfile.ZipFile('$TMP_ZIP').extractall('/tmp/bepinex_out')" 2>/dev/null || true
             fi
 
-            if [ -d "/tmp/bepinex_out/BepInExPack" ]; then
+            if [ -d "/tmp/bepinex_out/BepInExPack_V_Rising" ]; then
+                echo "Copying BepInExPack_V_Rising contents to $s..."
+                cp -r /tmp/bepinex_out/BepInExPack_V_Rising/* "$s/"
+            elif [ -d "/tmp/bepinex_out/BepInExPack" ]; then
                 echo "Copying BepInExPack contents to $s..."
                 cp -r /tmp/bepinex_out/BepInExPack/* "$s/"
             elif [ -d "/tmp/bepinex_out" ]; then
