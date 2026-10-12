@@ -287,6 +287,12 @@ if [ $(env | grep -c '^HOST_SETTINGS_') -gt 0 ]; then
   update_json_settings "$p/Settings/ServerHostSettings.json" "HOST_SETTINGS_"
 fi
 
+if [ -n "$ADMIN_STEAM_IDS" ]; then
+  echo "Updating adminlist.txt with ADMIN_STEAM_IDS..."
+  mkdir -p "$p/Settings"
+  echo "$ADMIN_STEAM_IDS" | tr ',' '\n' > "$p/Settings/adminlist.txt"
+fi
+
 # Checks if log file exists, if not creates it
 current_date=$(date +"%Y%m%d-%H%M")
 logfile="$current_date-VRisingServer.log"
