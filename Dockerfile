@@ -22,13 +22,24 @@ RUN useradd -m steam && cd /home/steam && \
     apt install -y steam \
                    steamcmd && \
     ln -s /usr/games/steamcmd /usr/bin/steamcmd
-#RUN apt install -y mono-complete
+
 RUN apt install -y wine \
                    winbind \
-                   winetricks
-RUN apt install -y xserver-xorg \
-                   xvfb
-RUN apt update -y && apt install -y jq
+                   winetricks \
+                   xserver-xorg \
+                   xvfb \
+                   jq
+
+# --- V RISING 1.0 MODDING SUPPORT ---
+# Initialize Wine and install .NET 6.0 so BepInEx can execute
+RUN mkdir -p /home/steam/.wine && chown -R steam:steam /home/steam/.wine
+USER steam
+ENV WINEPREFIX=/home/steam/.wine
+ENV WINEARCH=win64
+RUN wineboot -u && winetricks -q dotnet6
+USER root
+# ------------------------------------
+
 RUN rm -rf /var/lib/apt/lists/* && \
     apt clean && \
     apt autoremove -y
